@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from "prop-types";
 import axios from "axios";
+import Movie from "./Movie";
+import "./App.css";
 
 class App extends React.Component{
   state = { 
@@ -11,7 +13,7 @@ class App extends React.Component{
   getMovies = async () =>{
     //const movies = await axios.get("https://yts.mx/api/v2/list_movies.json");
     //axios는 get하는데 시간이 오래걸림. 따라서 async함수로 만들고 await키워드로 기다리게 해야한다.
-    const{data:{data:{movies}}} =await axios.get("https://yts.mx/api/v2/list_movies.json");
+    const{data:{data:{movies}}} =await axios.get("https://yts.mx/api/v2/list_movies.json?sort_by=rating");
     //위의 표현은 movies.data.data.movies 를 여러번 안 쓰고 movies로만 쓰게 하기위한 ES6방식
     this.setState({movies:movies, isLoading: false}); // 처음 무비는 setState, 두번째 무비는 axios에서 온거. ==> 그냥 movies하나만 써도 자바스크립트가 이해함
 
@@ -26,10 +28,20 @@ class App extends React.Component{
   }
 
   render(){
-    const {isLoading} = this.state;
+    const {isLoading, movies} = this.state;
     return(
-      <div>{isLoading ? "Loding" : "We are ready"}</div>
-    )
+      <section class="container">
+      {isLoading ? (
+      <div class="loader">
+        <span class="loader__text">Loading...</span>
+      </div>
+      ): movies.map( movie=>
+        <div class="movies">
+          <Movie key={movie.id} id={movie.id} year={movie.year} title={movie.title} summary={movie.summary} poster={movie.medium_cover_image}/>
+        </div>
+      )}
+      </section>
+    );
   }
 }
 
